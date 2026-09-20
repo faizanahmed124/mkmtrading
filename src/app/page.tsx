@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import AboutSection from "@/components/AboutSection";
 import Carousel from "@/components/Carousel";
 import CarCard from "@/components/CarCard";
+import ReviewsSection from "@/components/ReviewsSection";
 import VisitSection from "@/components/VisitSection";
 import type { Car, SiteSettings } from "@/types/car";
 
@@ -51,6 +52,8 @@ export default async function Home() {
           </div>
         )}
       </section>
+
+      <ReviewsSection />
 
       <VisitSection settings={settings as SiteSettings | null} />
     </>

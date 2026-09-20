@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 
 export default function CarGallery({
   images,
@@ -11,6 +10,7 @@ export default function CarGallery({
   name: string;
 }) {
   const [active, setActive] = useState(0);
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
 
   if (images.length === 0) {
     return (
@@ -20,21 +20,25 @@ export default function CarGallery({
     );
   }
 
+  const activeSrc = images[active];
+  const activeFailed = failed[activeSrc];
+
   return (
     <div>
-      <div className="perspective-container relative flex h-[45vh] min-h-[260px] items-center justify-center overflow-hidden rounded-md border border-steel bg-asphalt sm:h-[480px]">
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={images[active]}
-            src={images[active]}
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md border border-steel bg-panel">
+        {activeFailed ? (
+          <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-silver/60">
+            This photo couldn&apos;t load.
+          </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={activeSrc}
             alt={name}
-            initial={{ opacity: 0, rotateY: 8, scale: 1.02 }}
-            animate={{ opacity: 1, rotateY: 0, scale: 1 }}
-            exit={{ opacity: 0, rotateY: -8, scale: 0.98 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="h-full w-full object-contain"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={() => setFailed((prev) => ({ ...prev, [activeSrc]: true }))}
           />
-        </AnimatePresence>
+        )}
       </div>
 
       {images.length > 1 && (

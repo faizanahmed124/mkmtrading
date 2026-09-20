@@ -7,22 +7,27 @@ import { Plus, Pencil, Trash2, LogOut, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { compressImage } from "@/lib/image";
 import CarFormModal from "@/components/admin/CarFormModal";
+import { StarDisplay } from "@/components/StarRating";
 import type { Car, SiteSettings } from "@/types/car";
+import type { Review } from "@/types/review";
 
-type Tab = "inventory" | "settings";
+type Tab = "inventory" | "reviews" | "settings";
 
 export default function DashboardClient({
   initialCars,
   initialSettings,
   adminEmail,
+  initialReviews,
 }: {
   initialCars: Car[];
   initialSettings: SiteSettings | null;
   adminEmail: string;
+  initialReviews: Review[];
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("inventory");
   const [cars, setCars] = useState<Car[]>(initialCars);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCar, setEditingCar] = useState<Car | null>(null);
 
@@ -53,6 +58,17 @@ export default function DashboardClient({
     setCars((prev) => prev.filter((c) => c.id !== id));
   }
 
+  async function handleDeleteReview(id: string) {
+    if (!confirm("Delete this review? This can't be undone.")) return;
+    const supabase = createClient();
+    const { error } = await supabase.from("reviews").delete().eq("id", id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    setReviews((prev) => prev.filter((r) => r.id !== id));
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -78,6 +94,7 @@ export default function DashboardClient({
         {(
           [
             ["inventory", "Cars"],
+            ["reviews", "Reviews"],
             ["settings", "Shop settings"],
           ] as [Tab, string][]
         ).map(([key, label]) => (
@@ -177,6 +194,43 @@ export default function DashboardClient({
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === "reviews" && (
+        <div className="mt-8">
+          {reviews.length === 0 ? (
+            <div className="rounded-md border border-dashed border-steel-soft p-10 text-center text-silver">
+              No reviews yet.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reviews.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-start justify-between gap-4 rounded-md border border-steel bg-panel-raised p-4"
+                >
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <p className="font-medium text-cream">{r.name}</p>
+                      <StarDisplay rating={r.rating} />
+                    </div>
+                    <p className="mt-1 text-sm text-silver">{r.comment}</p>
+                    <p className="mt-1 text-xs text-silver/60">
+                      {new Date(r.created_at).toLocaleDateString("en-GB")}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteReview(r.id)}
+                    className="shrink-0 text-silver transition-colors hover:text-signal"
+                    aria-label="Delete review"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>
