@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Pencil, Trash2, LogOut, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { compressImage } from "@/lib/image";
 import CarFormModal from "@/components/admin/CarFormModal";
 import type { Car, SiteSettings } from "@/types/car";
 
@@ -226,13 +227,14 @@ function SettingsForm({ initialSettings }: { initialSettings: SiteSettings | nul
   const [error, setError] = useState<string | null>(null);
 
   async function uploadImage(
-    file: File,
+    rawFile: File,
     setUploading: (v: boolean) => void,
     setUrl: (v: string) => void
   ) {
     setUploading(true);
     setError(null);
     const supabase = createClient();
+    const file = await compressImage(rawFile, { maxWidth: 2400, maxHeight: 2400 });
     const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
     const { error: uploadError } = await supabase.storage
       .from("car-images")

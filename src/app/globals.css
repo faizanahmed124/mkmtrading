@@ -36,6 +36,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -43,6 +44,7 @@ body {
   color: var(--cream);
   font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 ::selection {

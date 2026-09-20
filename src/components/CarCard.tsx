@@ -65,6 +65,7 @@ export default function CarCard({ car, big = false }: { car: Car; big?: boolean 
             <img
               src={image}
               alt={`${car.brand} ${car.model}`}
+              loading="lazy"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               style={{ transform: "translateZ(20px)" }}
             />
@@ -96,7 +97,7 @@ export default function CarCard({ car, big = false }: { car: Car; big?: boolean 
           </h3>
 
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-silver">
-            {car.mileage != null && <span>{car.mileage.toLocaleString()} km</span>}
+            {car.mileage != null && <span>{car.mileage.toLocaleString()} miles</span>}
             {car.fuel_type && <span>{car.fuel_type}</span>}
             {car.transmission && <span>{car.transmission}</span>}
           </div>

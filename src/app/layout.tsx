@@ -1,12 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "My Motors — Find your next car",
+  title: "MKM Trading Ltd — Find your next car",
   description:
     "Browse our showroom inventory, check specs and prices, and visit us to buy.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

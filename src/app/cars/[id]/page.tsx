@@ -34,7 +34,7 @@ export default async function CarDetailPage({
   const specs = [
     { label: "Year", value: String(c.year) },
     { label: "Price", value: formatPrice(c.price) },
-    { label: "Mileage", value: c.mileage != null ? `${c.mileage.toLocaleString()} km` : "—" },
+    { label: "Mileage", value: c.mileage != null ? `${c.mileage.toLocaleString()} miles` : "—" },
     { label: "Fuel type", value: c.fuel_type ?? "—" },
     { label: "Transmission", value: c.transmission ?? "—" },
     { label: "Color", value: c.color ?? "—" },

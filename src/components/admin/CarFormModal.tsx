@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { compressImage } from "@/lib/image";
 import type { Car } from "@/types/car";
 
 type Props = {
@@ -60,7 +61,8 @@ export default function CarFormModal({ open, onClose, onSaved, editingCar }: Pro
     const supabase = createClient();
     const uploaded: string[] = [];
 
-    for (const file of Array.from(files)) {
+    for (const rawFile of Array.from(files)) {
+      const file = await compressImage(rawFile);
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from("car-images")
@@ -180,7 +182,7 @@ export default function CarFormModal({ open, onClose, onSaved, editingCar }: Pro
                 className="input"
               />
             </Field>
-            <Field label="Mileage (km)">
+            <Field label="Mileage (miles)">
               <input
                 type="number"
                 value={form.mileage}
@@ -215,19 +217,6 @@ export default function CarFormModal({ open, onClose, onSaved, editingCar }: Pro
                 className="input"
               >
                 {["Manual", "Automatic"].map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Condition">
-              <select
-                value={form.condition}
-                onChange={(e) => setForm({ ...form, condition: e.target.value })}
-                className="input"
-              >
-                {["New", "Used"].map((v) => (
                   <option key={v} value={v}>
                     {v}
                   </option>

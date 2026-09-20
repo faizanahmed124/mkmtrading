@@ -22,7 +22,7 @@ export default function CarGallery({
 
   return (
     <div>
-      <div className="perspective-container relative aspect-[4/3] overflow-hidden rounded-md border border-steel bg-panel">
+      <div className="perspective-container relative flex h-[45vh] min-h-[260px] items-center justify-center overflow-hidden rounded-md border border-steel bg-asphalt sm:h-[480px]">
         <AnimatePresence mode="wait">
           <motion.img
             key={images[active]}
@@ -32,7 +32,7 @@ export default function CarGallery({
             animate={{ opacity: 1, rotateY: 0, scale: 1 }}
             exit={{ opacity: 0, rotateY: -8, scale: 0.98 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
           />
         </AnimatePresence>
       </div>
@@ -50,7 +50,7 @@ export default function CarGallery({
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="h-full w-full object-cover" />
+              <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
             </button>
           ))}
         </div>
