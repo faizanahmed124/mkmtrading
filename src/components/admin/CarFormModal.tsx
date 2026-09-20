@@ -171,7 +171,7 @@ export default function CarFormModal({ open, onClose, onSaved, editingCar }: Pro
                 className="input"
               />
             </Field>
-            <Field label="Price (PKR)">
+            <Field label="Price (£)">
               <input
                 type="number"
                 required
@@ -301,7 +301,7 @@ export default function CarFormModal({ open, onClose, onSaved, editingCar }: Pro
             <button
               type="submit"
               disabled={saving || uploading}
-              className="rounded-sm bg-brass px-5 py-2.5 text-sm font-medium text-asphalt transition-colors hover:bg-brass-soft disabled:opacity-60"
+              className="rounded-sm bg-brass px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brass-soft disabled:opacity-60"
             >
               {saving ? "Saving…" : editingCar ? "Save changes" : "Add car"}
             </button>

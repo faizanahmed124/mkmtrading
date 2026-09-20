@@ -6,9 +6,9 @@ import Link from "next/link";
 import type { Car } from "@/types/car";
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat("en-PK", {
+  return new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "PKR",
+    currency: "GBP",
     maximumFractionDigits: 0,
   }).format(price);
 }
@@ -75,7 +75,7 @@ export default function CarCard({ car, big = false }: { car: Car; big?: boolean 
           )}
 
           {car.featured && (
-            <span className="absolute left-3 top-3 rounded-sm bg-brass px-2 py-1 text-xs font-medium uppercase tracking-wide text-asphalt">
+            <span className="absolute left-3 top-3 rounded-sm bg-brass px-2 py-1 text-xs font-medium uppercase tracking-wide text-white">
               Featured
             </span>
           )}

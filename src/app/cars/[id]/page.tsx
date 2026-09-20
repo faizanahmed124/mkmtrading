@@ -8,9 +8,9 @@ import CarGallery from "@/components/CarGallery";
 export const revalidate = 0;
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat("en-PK", {
+  return new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "PKR",
+    currency: "GBP",
     maximumFractionDigits: 0,
   }).format(price);
 }
@@ -86,7 +86,7 @@ export default async function CarDetailPage({
 
             <a
               href="#visit"
-              className="mt-8 inline-block rounded-sm bg-brass px-6 py-3 text-sm font-medium text-asphalt transition-colors hover:bg-brass-soft"
+              className="mt-8 inline-block rounded-sm bg-brass px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-brass-soft"
             >
               I want this one — show me the shop
             </a>

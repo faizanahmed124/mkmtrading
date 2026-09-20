@@ -101,7 +101,7 @@ export default function DashboardClient({
               setEditingCar(null);
               setModalOpen(true);
             }}
-            className="mb-6 flex items-center gap-2 rounded-sm bg-brass px-5 py-2.5 text-sm font-medium text-asphalt transition-colors hover:bg-brass-soft"
+            className="mb-6 flex items-center gap-2 rounded-sm bg-brass px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brass-soft"
           >
             <Plus className="h-4 w-4" />
             Add car
@@ -144,9 +144,9 @@ export default function DashboardClient({
                       </td>
                       <td className="px-4 py-3 text-silver">{car.year}</td>
                       <td className="px-4 py-3 text-silver">
-                        {new Intl.NumberFormat("en-PK", {
+                        {new Intl.NumberFormat("en-GB", {
                           style: "currency",
-                          currency: "PKR",
+                          currency: "GBP",
                           maximumFractionDigits: 0,
                         }).format(car.price)}
                       </td>
@@ -203,27 +203,80 @@ function SettingsForm({ initialSettings }: { initialSettings: SiteSettings | nul
     phone: initialSettings?.phone ?? "",
     whatsapp: initialSettings?.whatsapp ?? "",
     map_url: initialSettings?.map_url ?? "",
+    hero_eyebrow: initialSettings?.hero_eyebrow ?? "Premium cars / Trusted dealer",
+    hero_heading: initialSettings?.hero_heading ?? "Find the car that fits your drive.",
+    hero_subtext:
+      initialSettings?.hero_subtext ??
+      "Quality vehicles, verified condition, and transparent deals. Your next car is just a few clicks away.",
+    about_tagline:
+      initialSettings?.about_tagline ??
+      "Quality used vehicles at competitive prices. Browse our collection and find your perfect car today.",
+    about_paragraph:
+      initialSettings?.about_paragraph ??
+      "We are proud to offer first class customer service and competitive pricing on every car we sell.",
   });
+  const [heroImageUrl, setHeroImageUrl] = useState(initialSettings?.hero_image_url ?? "");
+  const [logoUrl, setLogoUrl] = useState(initialSettings?.logo_url ?? "");
+  const [aboutImageUrl, setAboutImageUrl] = useState(initialSettings?.about_image_url ?? "");
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingAbout, setUploadingAbout] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function uploadImage(
+    file: File,
+    setUploading: (v: boolean) => void,
+    setUrl: (v: string) => void
+  ) {
+    setUploading(true);
+    setError(null);
+    const supabase = createClient();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from("car-images")
+      .upload(path, file);
+
+    if (uploadError) {
+      setError(`Upload failed: ${uploadError.message}`);
+      setUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from("car-images").getPublicUrl(path);
+    setUrl(data.publicUrl);
+    setUploading(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setSaved(false);
+    setError(null);
     const supabase = createClient();
 
-    if (initialSettings?.id) {
-      await supabase.from("site_settings").update(form).eq("id", initialSettings.id);
-    } else {
-      await supabase.from("site_settings").insert(form);
-    }
+    const payload = {
+      ...form,
+      hero_image_url: heroImageUrl || null,
+      logo_url: logoUrl || null,
+      about_image_url: aboutImageUrl || null,
+    };
+
+    const { error: saveError } = initialSettings?.id
+      ? await supabase.from("site_settings").update(payload).eq("id", initialSettings.id)
+      : await supabase.from("site_settings").insert(payload);
+
     setSaving(false);
+    if (saveError) {
+      setError(saveError.message);
+      return;
+    }
     setSaved(true);
   }
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 max-w-lg space-y-4">
+      <p className="text-xs uppercase tracking-widest text-silver/70">Shop details</p>
       <Field label="Shop name">
         <input
           value={form.shop_name}
@@ -263,15 +316,135 @@ function SettingsForm({ initialSettings }: { initialSettings: SiteSettings | nul
         />
       </Field>
 
+      <div className="hud-rule !my-6" />
+      <p className="text-xs uppercase tracking-widest text-silver/70">Homepage banner</p>
+
+      <Field label="Small label above heading">
+        <input
+          value={form.hero_eyebrow}
+          onChange={(e) => setForm({ ...form, hero_eyebrow: e.target.value })}
+          className="input"
+        />
+      </Field>
+      <Field label="Main heading">
+        <input
+          value={form.hero_heading}
+          onChange={(e) => setForm({ ...form, hero_heading: e.target.value })}
+          className="input"
+        />
+      </Field>
+      <Field label="Subtext">
+        <textarea
+          rows={2}
+          value={form.hero_subtext}
+          onChange={(e) => setForm({ ...form, hero_subtext: e.target.value })}
+          className="input resize-none"
+        />
+      </Field>
+
+      <Field label="Banner photo (shows behind the homepage heading)">
+        <ImageUploadField
+          url={heroImageUrl}
+          uploading={uploadingHero}
+          onUpload={(file) => uploadImage(file, setUploadingHero, setHeroImageUrl)}
+          onRemove={() => setHeroImageUrl("")}
+        />
+      </Field>
+
+      <Field label="Logo (shown top-right of the banner)">
+        <ImageUploadField
+          url={logoUrl}
+          uploading={uploadingLogo}
+          onUpload={(file) => uploadImage(file, setUploadingLogo, setLogoUrl)}
+          onRemove={() => setLogoUrl("")}
+        />
+      </Field>
+
+      <div className="hud-rule !my-6" />
+      <p className="text-xs uppercase tracking-widest text-silver/70">
+        About section (shows below the banner)
+      </p>
+
+      <Field label="Tagline">
+        <textarea
+          rows={2}
+          value={form.about_tagline}
+          onChange={(e) => setForm({ ...form, about_tagline: e.target.value })}
+          className="input resize-none"
+        />
+      </Field>
+      <Field label="Paragraph (each line becomes its own paragraph)">
+        <textarea
+          rows={5}
+          value={form.about_paragraph}
+          onChange={(e) => setForm({ ...form, about_paragraph: e.target.value })}
+          className="input resize-none"
+        />
+      </Field>
+      <Field label="About photo">
+        <ImageUploadField
+          url={aboutImageUrl}
+          uploading={uploadingAbout}
+          onUpload={(file) => uploadImage(file, setUploadingAbout, setAboutImageUrl)}
+          onRemove={() => setAboutImageUrl("")}
+        />
+      </Field>
+
+      {error && <p className="text-sm text-signal">{error}</p>}
+
       <button
         type="submit"
-        disabled={saving}
-        className="rounded-sm bg-brass px-6 py-2.5 text-sm font-medium text-asphalt transition-colors hover:bg-brass-soft disabled:opacity-60"
+        disabled={saving || uploadingHero || uploadingLogo || uploadingAbout}
+        className="rounded-sm bg-brass px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brass-soft disabled:opacity-60"
       >
         {saving ? "Saving…" : "Save settings"}
       </button>
       {saved && <span className="ml-3 text-sm text-success">Saved.</span>}
     </form>
+  );
+}
+
+function ImageUploadField({
+  url,
+  uploading,
+  onUpload,
+  onRemove,
+}: {
+  url: string;
+  uploading: boolean;
+  onUpload: (file: File) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      {url ? (
+        <div className="group relative h-20 w-28 overflow-hidden rounded-sm border border-steel-soft">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={url} alt="" className="h-full w-full object-cover" />
+          <button
+            type="button"
+            onClick={onRemove}
+            className="absolute inset-0 flex items-center justify-center bg-asphalt/70 text-xs text-signal opacity-0 transition-opacity group-hover:opacity-100"
+          >
+            Remove
+          </button>
+        </div>
+      ) : (
+        <label className="flex h-20 w-28 cursor-pointer flex-col items-center justify-center gap-1 rounded-sm border border-dashed border-steel-soft text-silver transition-colors hover:border-brass hover:text-brass-soft">
+          <span className="text-xs">{uploading ? "Uploading…" : "Upload"}</span>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onUpload(file);
+            }}
+          />
+        </label>
+      )}
+    </div>
   );
 }
 
