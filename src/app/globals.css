@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+:root {
+  --asphalt: #0a1220;
+  --panel: #0f1b30;
+  --panel-raised: #142239;
+  --steel: #1e2c47;
+  --steel-soft: #2b3e63;
+  --silver: #94a3b8;
+  --cream: #eef2f8;
+  --brass: #3b7dfb;
+  --brass-soft: #63a0ff;
+  --signal: #ef4444;
+  --success: #22c55e;
+}
+
+@theme inline {
+  --color-asphalt: var(--asphalt);
+  --color-panel: var(--panel);
+  --color-panel-raised: var(--panel-raised);
+  --color-steel: var(--steel);
+  --color-steel-soft: var(--steel-soft);
+  --color-silver: var(--silver);
+  --color-cream: var(--cream);
+  --color-brass: var(--brass);
+  --color-brass-soft: var(--brass-soft);
+  --color-signal: var(--signal);
+  --color-success: var(--success);
+  --font-display: "Barlow Condensed";
+  --font-body: "Inter";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--asphalt);
+  color: var(--cream);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brass);
+  color: var(--asphalt);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--asphalt);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--steel-soft);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brass);
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+}
+
+/* HUD-style dashed divider used as a structural device (spec sheets), not decoration */
+.hud-rule {
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--steel-soft) 0px,
+    var(--steel-soft) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.perspective-container {
+  perspective: 1200px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.input {
+  width: 100%;
+  border-radius: 2px;
+  border: 1px solid var(--steel);
+  background: var(--panel);
+  color: var(--cream);
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--brass);
+}
