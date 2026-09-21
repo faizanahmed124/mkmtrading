@@ -6,6 +6,7 @@ import { ChevronRight, ShieldCheck, BadgeCheck, Handshake } from "lucide-react";
 import type { SiteSettings } from "@/types/car";
 
 const features = [
+  { icon: ShieldCheck, text: "Finance options available Contact us for more info" },
   { icon: BadgeCheck, text: "Fully inspected before it ever reaches the floor" },
   { icon: Handshake, text: "No pressure, no hidden fees — just honest advice" },
 ];
